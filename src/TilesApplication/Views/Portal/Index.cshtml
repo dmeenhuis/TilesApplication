@@ -14,24 +14,63 @@
 
         ko.applyBindings(viewModel);
 
-        $(function () {
-            $.get('/api/Tiles', function (data) {
+        $(function() {
+            $.get('/api/Tiles', function(data) {
                 viewModel.tileGroups(data);
-                
-                $.StartMenu();
+
+                initTileFunctions();
             });
         });
 
-        $(function () {
-            $('#test').on('click', function () {
+        $(function() {
+            $('#test').on('click', function() {
                 var html = $('#tiles').parent().html();
 
                 alert(html);
             });
+
+            $('#subTiles').on('click', function() {
+                $.get('/api/Tiles?groupId=AppMgr&tileId=BTN', function(data) {
+                    viewModel.tileGroups(data);
+                    
+                    initTileFunctions();
+                });
+            });
         });
-        
-        function joinCssClasses(classes) {
-            return "tile icon " + classes.join(" ");
+
+        function initTileFunctions() {
+            $.StartMenu();
+
+            var allTileGroups = $('[data-role=tile-group], .tile-group');
+            if (allTileGroups.length > 0) {
+                $(allTileGroups).TileDrag({});
+            }
+
+            var slidedTiles = $('[data-role=tile-slider], .block-slider, .tile-slider');
+            slidedTiles.each(function (index, tile) {
+                var params = {};
+                tile = $(tile);
+                params.direction = tile.data('paramDirection');
+                params.duration = tile.data('paramDuration');
+                params.period = tile.data('paramPeriod');
+                tile.tileBlockSlider(params);
+            });
+        }
+
+        function joinCssClasses(classes, defaults) {
+            return defaults + ' ' + classes.join(" ");
+        }
+
+        function buildAttributes(attributes, cssClasses) {
+            var attrObj = { 'class': cssClasses };
+
+            if (attributes.length > 0) {
+                for (var i = 0, len = attributes.length; i < len; i++) {
+                    attrObj[attributes[i].Key] = attributes[i].Value;
+                }
+            }
+
+            return attrObj;
         }
     </script>
 }
@@ -42,6 +81,19 @@
     }
 </style>
 
+<script type="text/html" id="tile-content-tmpl">
+    <!-- ko foreach: ContentSections -->        
+        <div class="tile-content">
+            <span data-bind="text: $data"></span>
+        </div>
+    <!-- /ko -->
+
+    <div class="brand">
+        <div class="badge" data-bind="text: Badge"></div>
+        <div class="name" data-bind="text: Name"></div>
+    </div>
+</script>
+
 <div class="metrouicss">
     <div class="page secondary fixed-header">
         <div class="page-header ">
@@ -49,8 +101,8 @@
                 <div class="user-login">
                     <a href="#">
                         <div class="name">
-                            <span class="first-name">Sergey</span>
-                            <span class="last-name">Pimenov</span>
+                            <span class="first-name">Dennis</span>
+                            <span class="last-name">Meenhuis</span>
                         </div>
                         <div class="avatar">
                             <i class="icon-user fg-color-white"></i>
@@ -60,6 +112,7 @@
 
                 <h1 class="fg-color-white">Start</h1>
                 <button id="test">Test</button>
+                <button id="subTiles">Sub Tiles</button>
             </div>
         </div>
 
@@ -68,13 +121,9 @@
                 
                 <div class="tile-group tile-drag" data-bind="foreach: Tiles">
                     
-                    <div data-bind="attr: { 'class': joinCssClasses(CssClasses) }">
-                        <div class="tile-content">
-                            <i class="icon-calculate"></i>
-                        </div>
-                        <div class="brand">
-                            <span class="name" data-bind="text: Name"></span>
-                        </div>
+                    <div data-bind="attr: buildAttributes(Attributes, joinCssClasses(CssClasses, 'tile')), 
+                        template: { name: 'tile-content-tmpl' }">
+                        
                     </div>
 
                 </div>

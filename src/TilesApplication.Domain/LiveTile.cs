@@ -6,6 +6,7 @@ namespace TilesApplication.Domain
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string Badge { get; set; }
         public string Url { get; set; }
         public IList<KeyValuePair<string, string>> Attributes { get; set; }
         public IList<string> ContentSections { get; set; }

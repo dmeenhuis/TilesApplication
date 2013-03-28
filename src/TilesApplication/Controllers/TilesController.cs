@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using TilesApplication.Domain;
 
@@ -6,7 +8,22 @@ namespace TilesApplication.Controllers
 {
     public class TilesController : ApiController
     {
-        public IEnumerable<TileGroup> Get()
+        public IEnumerable<TileGroup> Get(string groupId = null, string tileId = null)
+        {
+            var tileGroups = GetTileGroups();
+
+            if (groupId != null && tileId != null)
+            {
+                var group = tileGroups.First(x => x.Id.Equals(groupId, StringComparison.OrdinalIgnoreCase));
+                var tile = group.Tiles.First(x => x.Id.Equals(tileId, StringComparison.OrdinalIgnoreCase));
+
+                return tile.Groups;
+            }
+
+            return tileGroups;
+        }
+
+        private IEnumerable<TileGroup> GetTileGroups()
         {
             return new List<TileGroup>
             {
@@ -20,6 +37,7 @@ namespace TilesApplication.Controllers
                             {
                                 Id = "THP",
                                 Name = "Theme pages",
+                                Badge = "5",
                                 Url = "Theme",
                                 ContentSections = new [] { "Tile content" },
                                 CssClasses = new [] { "bg-color-blue" }
@@ -37,7 +55,7 @@ namespace TilesApplication.Controllers
                                 Id = "PRLX",
                                 Name = "Parallax Effects",
                                 Url = "Parallax",
-                                ContentSections = new [] { "Parallax content" },
+                                ContentSections = new [] { "Parallax content", "some more" },
                                 CssClasses = new [] { "bg-color-yellow" },
                                 Attributes = new List<KeyValuePair<string, string>>
                                 {
@@ -47,10 +65,10 @@ namespace TilesApplication.Controllers
                             },
                             new LiveTile
                             {
-                                Id = "HTSP",
-                                Name = "Hotspots",
-                                Url = "Hotspots",
-                                ContentSections = new [] { "Hotspot content" },
+                                Id = "BTN",
+                                Name = "Theme Buttons",
+                                Url = "Buttons",
+                                ContentSections = new [] { "Button content" },
                                 CssClasses = new [] { "bg-color-pink" },
                                 Groups = new List<TileGroup>
                                 {
