@@ -1,0 +1,86 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Start";
+}
+
+@section scripts {
+    <script type="text/javascript">
+        var tilesData = [];
+
+        var viewModel = {
+            tileGroups: ko.observableArray(tilesData)
+        };
+
+        ko.applyBindings(viewModel);
+
+        $(function () {
+            $.get('/api/Tiles', function (data) {
+                viewModel.tileGroups(data);
+                
+                $.StartMenu();
+            });
+        });
+
+        $(function () {
+            $('#test').on('click', function () {
+                var html = $('#tiles').parent().html();
+
+                alert(html);
+            });
+        });
+        
+        function joinCssClasses(classes) {
+            return "tile icon " + classes.join(" ");
+        }
+    </script>
+}
+
+<style type="text/css">
+    body {
+        color: #FFF;
+    }
+</style>
+
+<div class="metrouicss">
+    <div class="page secondary fixed-header">
+        <div class="page-header ">
+            <div class="page-header-content">
+                <div class="user-login">
+                    <a href="#">
+                        <div class="name">
+                            <span class="first-name">Sergey</span>
+                            <span class="last-name">Pimenov</span>
+                        </div>
+                        <div class="avatar">
+                            <i class="icon-user fg-color-white"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <h1 class="fg-color-white">Start</h1>
+                <button id="test">Test</button>
+            </div>
+        </div>
+
+        <div class="page-region">
+            <div id="tiles" class="page-region-content tiles" data-bind="foreach: tileGroups">
+                
+                <div class="tile-group tile-drag" data-bind="foreach: Tiles">
+                    
+                    <div data-bind="attr: { 'class': joinCssClasses(CssClasses) }">
+                        <div class="tile-content">
+                            <i class="icon-calculate"></i>
+                        </div>
+                        <div class="brand">
+                            <span class="name" data-bind="text: Name"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
